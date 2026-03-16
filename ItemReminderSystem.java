@@ -13,6 +13,9 @@ static final byte I2C0 = 0x3C; // OLED Display
 void main()
         throws InterruptedException, IOException {
 
+    // Change "ItemArray" to list of items you want to remember
+    String[] ItemArray = {"Phone", "Wallet", "Keys"};
+
     // Initialize Arduino
     var device = new FirmataDevice("COM3");
     device.start();
@@ -25,14 +28,17 @@ void main()
 
     //Initialize NFC Scanner
     var NFCScanner = device.getPin(A0);
-    NFCScanner.setMode(Pin.Mode.OUTPUT);
+    NFCScanner.setMode(Pin.Mode.ANALOG);
 
     //Initialize Reset Button
     var ResetButton = device.getPin(D6);
     ResetButton.setMode(Pin.Mode.INPUT);
 
-    // Change "ItemArray" to list of items you want to remember
-    String[] ItemArray = {"Phone", "Wallet", "Keys"};
+    //Initialize LED Light
+    var LEDLight =  device.getPin(D4);
+    LEDLight.setMode(Pin.Mode.OUTPUT);
+    LEDLight.setValue(ItemReminderLogic.LightEnable(ItemArray));
+
 
     // Only change if you want to break the program
     boolean Running = true;
@@ -49,10 +55,13 @@ void main()
                 String ScannedItem = ItemReminderLogic.ItemScan(NFCScanner);
                 ItemArray = ItemReminderLogic.updateList(ItemArray, ScannedItem);
                 ItemReminderLogic.updateDisp(Disp, ItemArray);
+                LEDLight.setValue(ItemReminderLogic.LightEnable(ItemArray));
             }
 
 
             if (Integer.parseInt(ResetButton.toString()) == 1) {
+                device.stop();
+                System.out.println("Reset Button Enabled");
                 Running = false;
             }
         }
