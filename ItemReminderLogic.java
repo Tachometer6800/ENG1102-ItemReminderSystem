@@ -12,6 +12,7 @@ class ItemReminderLogic {
         this.pin = pin;
     }
 
+
     public static void initialize(SSD1306 display, String[] items) throws InterruptedException {
         int height = 0;
         System.out.println("Initializing...");
@@ -53,5 +54,20 @@ class ItemReminderLogic {
         String ScannedItem = String.valueOf(ReaderValue);
 
         return ScannedItem;
+    }
+
+    public static Integer LightEnable(String[] items) {
+        int nullValues = 0;
+        for(int i = 0; i < items.length; i++) {
+            if (items[i] == null){
+                nullValues++;
+            }
+        }
+        if(nullValues == items.length){
+            return 1;
+        }
+        else{
+            return 0;
+        }
     }
 }
